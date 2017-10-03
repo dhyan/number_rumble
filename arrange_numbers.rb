@@ -14,7 +14,7 @@ class ArrangeNumbers < Gosu::Window
     fill = Magick::TextureFill.new(Magick::ImageList.new("media/space.png"))
     background = Magick::Image.new(WIDTH, HEIGHT, fill)
     @background_image = Gosu::Image.new(background, :tileable => true)
-    @star_anim = Gosu::Image.load_tiles("media/gem.png", 25, 25)
+    @font = Gosu::Font.new(20)
     @stars = Array.new
     @game = Game.new(self)
   end
@@ -37,14 +37,19 @@ class ArrangeNumbers < Gosu::Window
 
   def update
     if @game.success?
-      @stars.push(Star.new(@star_anim))
+      return if @stars.length > 100
+      @stars.push(Star.new)
     end
   end
 
   def draw
     @background_image.draw(0, 0, ZOrder::BACKGROUND)
-    @stars.each { |star| star.draw }
-    @game.draw
+    if @game.success?
+      Star.new.draw
+      @stars.each { |star| star.draw_stars }
+    else
+      @game.draw
+    end
   end
 end
 

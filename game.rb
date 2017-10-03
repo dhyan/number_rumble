@@ -3,6 +3,10 @@ require_relative 'square'
 class Game
   attr_reader :squares
 
+  module ZOrder
+    BACKGROUND, STARS, PLAYER, UI = *0..3
+  end
+
   # Each number has a fixed unique position in the solved array
   RESULT = [[1,1,1], [1, 2, 2], [1, 3, 3], [1, 4, 4],
             [2, 1, 5], [2,2,6], [2,3,7], [2,4,8],
@@ -10,8 +14,10 @@ class Game
             [4,1,13], [4,2,14],[4,3,15], [4,4,""]]
 
   def initialize(window)
+    @start = Time.now
     @window = window
     @squares = []
+    @font = Gosu::Font.new(20)
     numbers = (1..15).to_a#.shuffle!
     (1..4).each do |row|
       (1..4).each do |column|
@@ -49,8 +55,8 @@ class Game
 
   # Sucees when it matches the final RESULT array
   def success?
+    #return true
     current_array = @squares&.map {|num| [num.row, num.column, num.number]}
-    puts current_array.inspect
     (RESULT - current_array).empty?
   end
 
@@ -58,5 +64,6 @@ class Game
     @squares.each do |square|
       square.draw
     end
+    @font.draw("Time Ticks: #{(Time.now - @start)}", 10, 10, ZOrder::UI, 1.0, 1.0, 0xff_ffff00) #unless @game.success?
   end
 end

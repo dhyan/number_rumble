@@ -25,6 +25,7 @@ class Game
         @squares.push Square.new(@window, column, row, num)
       end
     end
+    restart if puzzle_not_solvable?
   end
 
   def swap_squares(mouse_x, mouse_y)
@@ -53,11 +54,28 @@ class Game
     false
   end
 
+  # Puzzle is solvable if https://www.geeksforgeeks.org/check-instance-15-puzzle-solvable/
+  def puzzle_not_solvable?
+    inverse_count = 0
+    i = 0
+    numbers = @squares.map(&:number)
+    while i < numbers.length - 2
+      inverse_count += 1 if numbers[i] > numbers[i + 1]
+      i += 1
+    end
+    return true if inverse_count.odd?
+    false
+  end
+
   # Sucees when it matches the final RESULT array
   def success?
     #return true
     current_array = @squares&.map {|num| [num.row, num.column, num.number]}
     (RESULT - current_array).empty?
+  end
+
+  def restart
+    ArrangeNumbers.new.show
   end
 
   def draw
